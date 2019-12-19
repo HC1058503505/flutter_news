@@ -264,7 +264,7 @@ class _HomeState extends State<Home> {
             ],
           ),
           Container(
-            width: MediaQuery.of(context).size.width - 100.0 * 16.0 / 9.0 - 0.5,
+            width: MediaQuery.of(context).size.width - 100.0 * 16.0 / 9.0 - 1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
