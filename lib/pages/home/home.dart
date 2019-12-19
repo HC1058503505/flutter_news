@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_swiper/flutter_swiper.dart';
-
+import 'package:cgtn/pages/detail/newsdetail.dart';
 class Home extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -123,6 +123,8 @@ class _HomeState extends State<Home> {
         ),
         onTap: (index) {
           print(index);
+          // MaterialPageRoute(builder: (BuildContext context) => MyPage())
+          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => NewsDetail(content: contents[index])));
         },
       ),
       width: MediaQuery.of(context).size.width,
