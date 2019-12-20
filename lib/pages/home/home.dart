@@ -90,7 +90,12 @@ class _HomeState extends State<Home> {
                   break;
                 case 5:
                   Map<String, dynamic> item = contents.first;
-                  return normalCell(context, item);
+                  return GestureDetector(
+                    child: normalCell(context, item),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => NewsDetail(content: item)));
+                    },
+                  );
                   break;
                 default:
                   return Container();
