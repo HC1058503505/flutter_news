@@ -81,12 +81,21 @@ class _HomeState extends State<Home> {
               int styleType = int.parse(section["styleType"]);
               List contents = section["contents"] as List;
               switch (styleType) {
+                case 1:
+                  Map<String, dynamic> item = contents.first;
+                  return bigPictureCell(item);
+                  break;
                 case 2:
                   return swiperNews(context, contents);
                   break;
                 case 4:
                   Map<String, dynamic> item = contents.first;
-                  return bannerCell(context, item);
+                  return GestureDetector(
+                    child: bannerCell(context, item),
+                    onTap: () {
+
+                    },
+                  );
                   break;
                 case 5:
                   Map<String, dynamic> item = contents.first;
@@ -97,8 +106,21 @@ class _HomeState extends State<Home> {
                     },
                   );
                   break;
+                case 8:
+                  return videosAndPicturesCell(contents, "Videos");
+                  break;
+                case 9:
+                  return videosAndPicturesCell(contents, "Pictures");
+                  break;
+                case 13:
+                  Map<String, dynamic> item = contents.first;
+                  return spicialBannerCell(item);
+                  break;
                 default:
-                  return Container();
+                  return Container(
+                    color: Colors.red,
+                    height: 10,
+                  );
               }
             },
             separatorBuilder: (context, index) {
@@ -205,20 +227,72 @@ class _HomeState extends State<Home> {
           ),
           Padding(
             padding: EdgeInsets.all(10),
-            child: Text(
-              dateTimeStr + '.' + property,
-              maxLines: 1,
-              style: TextStyle(
-                  color: Colors.black,
-                  decoration: TextDecoration.none,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 15),
-            ),
+            child: publishDate(dateTimeStr, property),
           )
         ],
       ),
     );
   }
+
+  Widget videosAndPicturesCell (List<dynamic> items, String title) {
+    Map<String, dynamic> item = items.first ?? Map<String, dynamic>();
+    bool isPicture = (item["coverType"] ?? 0) == 1;
+    String newsTitle = item["shortHeadline"] ?? item["longHeadline"] ?? "";
+    String timeStr = item["updateTime"] ?? item["publishTime"] ?? "";
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(int.tryParse(timeStr) ?? 0);
+    String dateTimeStr = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+    String property = item["property"] ?? "";
+    Map<String, dynamic> coverJSON = item["cover"] as Map<String, dynamic>;
+    Map<String, dynamic> cover_16_9_JSON =
+        coverJSON["r_16_9"] as Map<String, dynamic>;
+    Map<String, dynamic> cover_16_9_quality_max_JSON = cover_16_9_JSON["quality_max"] as Map<String, dynamic>;
+    String cover_16_9_quality_max_url = cover_16_9_quality_max_JSON["url"] ?? "";
+    return GestureDetector(
+      child: Stack(
+                alignment: AlignmentDirectional.bottomEnd,
+                children: <Widget>[
+                FadeInImage.assetNetwork(
+                  placeholder: "lib/images/placeholderimg.png",
+                  image: cover_16_9_quality_max_url,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text("Trendings ${title} >> ",
+                            style: TextStyle(
+                              color: Colors.white,
+                              decoration: TextDecoration.none,
+                              fontSize: 20
+                            ),
+                          ),
+                )
+              ],
+            ),
+      onTap: () {
+        // Trendings
+      },
+    );
+  }
+
+  Widget spicialBannerCell(Map<String, dynamic> item) {
+    bool isPicture = (item["coverType"] ?? 0) == 1;
+    String newsTitle = item["shortHeadline"] ?? item["longHeadline"] ?? "";
+    String timeStr = item["updateTime"] ?? item["publishTime"] ?? "";
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(int.tryParse(timeStr) ?? 0);
+    String dateTimeStr = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+    String property = item["property"] ?? "";
+    Map<String, dynamic> coverJSON = item["cover"] as Map<String, dynamic>;
+    Map<String, dynamic> cover_0_0_JSON =
+        coverJSON["r_0_0"] as Map<String, dynamic>;
+    Map<String, dynamic> cover_0_0_quality_max_JSON =
+        cover_0_0_JSON["quality_max"] as Map<String, dynamic>;
+    String cover_0_0_quality_max_url = cover_0_0_quality_max_JSON["url"];
+    return FadeInImage.assetNetwork(
+            placeholder: 'lib/images/bannerplaceholder.png',
+            image: cover_0_0_quality_max_url,
+          );
+}
 
   Widget normalCell(BuildContext context, Map<String, dynamic> item) {
     bool isPicture = (item["coverType"] ?? 0) == 1;
@@ -268,8 +342,7 @@ class _HomeState extends State<Home> {
               )
             ],
           ),
-          Container(
-            width: MediaQuery.of(context).size.width - 100.0 * 16.0 / 9.0 - 1,
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -291,20 +364,76 @@ class _HomeState extends State<Home> {
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: Text(
-                    dateTimeStr + "." + property,
-                    maxLines: 1,
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 15.0 * MediaQuery.of(context).textScaleFactor,
-                      fontWeight: FontWeight.normal,
-                      decoration: TextDecoration.none
-                    ),
-                  ),
+                  child: publishDate(dateTimeStr, property),
                 )
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget publishDate(String dateTimeStr, String property) {
+      return RichText(
+              text: TextSpan(
+                text: dateTimeStr + ".",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.normal,
+                  decoration: TextDecoration.none
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: property,
+                    style: TextStyle(
+                      color: Color.fromRGBO(191, 174, 98, 1),
+                      fontSize: 15.0,
+                      decoration: TextDecoration.none
+                    )
+                  )
+                ].toList()
+              ),
+            );
+  }
+
+  Widget bigPictureCell(Map<String, dynamic> item) {
+    bool isPicture = (item["coverType"] ?? 0) == 1;
+    String newsTitle = item["shortHeadline"] ?? item["longHeadline"] ?? "";
+    String timeStr = item["updateTime"] ?? item["publishTime"] ?? "";
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(int.tryParse(timeStr) ?? 0);
+    String dateTimeStr = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+    String property = item["property"] ?? "";
+    Map<String, dynamic> coverJSON = item["cover"] as Map<String, dynamic>;
+    Map<String, dynamic> cover_16_9_JSON =
+        coverJSON["r_16_9"] as Map<String, dynamic>;
+    Map<String, dynamic> cover_16_9_quality_max_JSON =
+        cover_16_9_JSON["quality_max"] as Map<String, dynamic>;
+    String cover_16_9_quality_max_url = cover_16_9_quality_max_JSON["url"];
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          FadeInImage.assetNetwork(
+            placeholder: "lib/images/placeholderimg.png",
+            image: cover_16_9_quality_max_url,
+          ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Text(newsTitle,
+              style: TextStyle(
+                color: Colors.black,
+                decoration: TextDecoration.none,
+                fontSize: 20
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: publishDate(dateTimeStr, property),
+          )
         ],
       ),
     );

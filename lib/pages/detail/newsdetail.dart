@@ -56,6 +56,7 @@ class _NewsDetailState extends State<NewsDetail> {
         hideHeaderFooter();
       },
       onPageFinished: (url) {
+        _webViewController.evaluateJavascript("hideElements()");
         Future.delayed(Duration(milliseconds: 1000), () {
           setState(() {
             startLoading = false;
@@ -125,8 +126,6 @@ class _NewsDetailState extends State<NewsDetail> {
             }
           }
           ''';
-    // Future.delayed(Duration(milliseconds: 500), () {
-    // });
     _webViewController.evaluateJavascript(jsStr);
   }
 
